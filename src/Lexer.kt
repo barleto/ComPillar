@@ -7,8 +7,11 @@ class Lexer(var input: String) {
     val definitions: MutableList<TokenDefinition> = mutableListOf()
 
     init {
-        definitions.add(TokenDefinition("[_a-zA-z][_a-zA-z0-9]*", TokenType.ID))
-        definitions.add(TokenDefinition("[:]", TokenType.ARROW))
+        definitions.add(TokenDefinition("\"[^\"]*\"", TokenType.LITERAL))
+        definitions.add(TokenDefinition("\'[^\']*\'", TokenType.LITERAL))
+        definitions.add(TokenDefinition("<[_a-zA-z][-_a-zA-z0-9]*>", TokenType.RULE))
+        definitions.add(TokenDefinition("[\n]+", TokenType.END_OF_LINE))
+        definitions.add(TokenDefinition("::=", TokenType.ARROW))
         definitions.add(TokenDefinition("[|]", TokenType.OR))
     }
 
@@ -27,6 +30,9 @@ class Lexer(var input: String) {
         while (inputPointer < input.length) {
             val match = scan()
             if (match.isMatch && match.start == inputPointer) {
+                if (match.type == TokenType.END_OF_LINE) {
+                    lineno += 1
+                }
                 inputPointer = match.end
                 return Token(match.type, match.value, lineno, inputPointer)
             } else {
@@ -59,7 +65,7 @@ class TokenDefinition(patternString: String, val type: TokenType) {
 
     }
 
-    data class MatchResult(val isMatch: Boolean, val value: String, val type: TokenType = TokenType.ID, val start: Int = 0, val end: Int = 0) {
+    data class MatchResult(val isMatch: Boolean, val value: String, val type: TokenType = TokenType.LITERAL, val start: Int = 0, val end: Int = 0) {
         fun length(): Int {
             return value.length
         }
@@ -67,8 +73,10 @@ class TokenDefinition(patternString: String, val type: TokenType) {
 }
 
 enum class TokenType {
-    ID,
+    LITERAL,
     OR,
     ARROW,
+    RULE,
+    END_OF_LINE,
     EOF
 }
