@@ -54,7 +54,6 @@ class LLParser(val lexer: Lexer, var debug : Boolean = false) {
         consumeToken(TokenType.ARROW)
         ruleExpressionNode[1] = BNFSyntaxNodes.RuleBody()
         ruleBody(ruleExpressionNode[1] as BNFSyntaxNodes.RuleBody)
-        consumeToken(TokenType.END_OF_LINE)
     }
 
     private fun ruleBody(ruleBody: BNFSyntaxNodes.RuleBody) {
@@ -74,6 +73,9 @@ class LLParser(val lexer: Lexer, var debug : Boolean = false) {
         pLog()
         while(head.type == TokenType.LITERAL || head.type == TokenType.RULE){
             getTerms(ruleDescription)
+            if(head.type == TokenType.RULE && lookAhead.type == TokenType.ARROW){
+                break
+            }
         }
 
     }
