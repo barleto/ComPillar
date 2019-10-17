@@ -1,13 +1,12 @@
 fun main(args: Array<String>) {
     val input = """<sintaxe> ::= <lista-de-regras>
     <lista-de-regras> ::= <regra> | <regra> <lista-de-regras>
-    <regra>   ::=  <nome-da-regra>  "::=" <expressao> <fim-da-linha>
+    <regra>   ::=  <nome-da-regra>  "::=" <expressao>
     <expressao>  ::= <lista-de-termos> | <lista-de-termos> "|" <expressao>
     <lista-de-termos>  ::= <termo> | <termo>  <lista-de-termos>
-    <termo> ::= <LITERAL> | <nome-da-regra>
+    <termo> ::= <LITERAL>? | <nome-da-regra>?
     <nome-da-regra> ::= "<" <LITERAL> ">"
-    <LITERAL> ::= ".*"
-    <fim-da-linha> ::= "[\n]+"
+    <LITERAL> ::= '".*\"'
     """
 
     var lex = Lexer(input)
@@ -19,7 +18,8 @@ fun main(args: Array<String>) {
         }
     }
     lex = Lexer(input)
-    val a = LLParser(lex, true).parse()
+    val bnfAstTree = LLParser(lex, true).parse()
+    BNFASTTreeTraversser().f()
 }
 
 class Grammar{
@@ -35,5 +35,14 @@ class Grammar{
     fun addRule(){
 
     }
+}
+
+class BNFASTTreeTraversser{
+
+
+    fun f(){
+        this.javaClass.methods.size
+    }
+
 }
 

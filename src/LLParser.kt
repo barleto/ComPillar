@@ -1,4 +1,4 @@
-import com.sun.org.apache.xpath.internal.operations.Bool
+
 
 class LLParser(val lexer: Lexer, var debug : Boolean = false) {
     private var head: Token = lexer.getToken()
@@ -82,13 +82,19 @@ class LLParser(val lexer: Lexer, var debug : Boolean = false) {
 
     private fun getTerms(ruleDescription: BNFSyntaxNodes.RuleDescription) {
         pLog()
-        if(head.type == TokenType.RULE){
-            ruleDescription.add(BNFSyntaxNodes.RuleReferenceNode(head.value))
+        var resultingNode : BNFSyntaxNodes.AstNode? = null
+        if (head.type == TokenType.RULE) {
+            resultingNode = BNFSyntaxNodes.RuleReferenceNode(head.value)
             consumeToken(TokenType.RULE)
-        }else if(head.type == TokenType.LITERAL){
-            ruleDescription.add(BNFSyntaxNodes.LiteralNode(head.value))
+        } else if (head.type == TokenType.LITERAL) {
+            resultingNode = BNFSyntaxNodes.LiteralNode(head.value)
             consumeToken(TokenType.LITERAL)
         }
+        if(head.type == TokenType.OPTIONAL_OP){
+            resultingNode = BNFSyntaxNodes.OptionalNode(resultingNode!!)
+            consumeToken(TokenType.OPTIONAL_OP)
+        }
+        ruleDescription.add(resultingNode!!)
     }
 
     private fun pLog(){
@@ -120,6 +126,11 @@ class BNFSyntaxNodes {
     class RuleBody : AstNode()
     class RuleDescription : AstNode()
     class RuleReferenceNode(val ruleName : String) : AstNode()
-    class TermNode : AstNode()
     class LiteralNode(val value : String) : AstNode()
+    class OptionalNode(n : AstNode) : AstNode(){
+        init {
+            children.add(n)
+        }
+    }
+
 }

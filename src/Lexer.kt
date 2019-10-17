@@ -12,6 +12,7 @@ class Lexer(var input: String) {
         definitions.add(TokenDefinition("<[_a-zA-z][-_a-zA-z0-9]*>", TokenType.RULE))
         definitions.add(TokenDefinition("::=", TokenType.ARROW))
         definitions.add(TokenDefinition("[|]", TokenType.OR))
+        definitions.add(TokenDefinition("[?]", TokenType.OPTIONAL_OP))
     }
 
     fun scan(): TokenDefinition.MatchResult {
@@ -73,5 +74,6 @@ enum class TokenType {
     OR,
     ARROW,
     RULE,
-    EOF
+    EOF,
+    OPTIONAL_OP
 }
