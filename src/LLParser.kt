@@ -15,7 +15,7 @@ class LLParser(val lexer: Lexer, var debug : Boolean = false) {
         }
     }
 
-    fun parse(): BNFSyntaxNodes.AstNode {
+    fun parse(): BNFSyntaxNodes.SyntaxNode {
         try {
             program()
         }catch (e: Exception){
@@ -91,7 +91,7 @@ class LLParser(val lexer: Lexer, var debug : Boolean = false) {
             consumeToken(TokenType.LITERAL)
         }
         if(head.type == TokenType.OPTIONAL_OP){
-            resultingNode = BNFSyntaxNodes.OptionalNode(resultingNode!!)
+            resultingNode = BNFSyntaxNodes.OptionalOpNode(resultingNode!!)
             consumeToken(TokenType.OPTIONAL_OP)
         }
         ruleDescription.add(resultingNode!!)
@@ -119,15 +119,18 @@ class BNFSyntaxNodes {
         fun last() : AstNode{
             return children.last()
         }
+        fun first() : AstNode{
+            return  children.first()
+        }
     }
     class SyntaxNode : AstNode()
     class RuleExpressionNode : AstNode()
     class RuleNameDeclarationNode(val ruleName : String) : AstNode()
     class RuleBody : AstNode()
     class RuleDescription : AstNode()
-    class RuleReferenceNode(val ruleName : String) : AstNode()
+    class RuleReferenceNode(val value : String) : AstNode()
     class LiteralNode(val value : String) : AstNode()
-    class OptionalNode(n : AstNode) : AstNode(){
+    class OptionalOpNode(n : AstNode) : AstNode(){
         init {
             children.add(n)
         }
