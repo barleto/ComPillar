@@ -62,4 +62,8 @@ class BNFASTTreeVisitor{
     private fun p_OptionalOpNode(n : BNFSyntaxNodes.AstNode){
 
     }
+
+    private fun p_EmptyLiteralNode(n : BNFSyntaxNodes.AstNode){
+
+    }
 }

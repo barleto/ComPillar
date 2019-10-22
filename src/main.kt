@@ -4,7 +4,7 @@ fun main(args: Array<String>) {
 <regra>   ::=  <nome-da-regra>  "::=" <expressao>
 <expressao>  ::= <lista-de-termos> | <lista-de-termos> "|" <expressao>
 <lista-de-termos>  ::= <termo> | <termo>  <lista-de-termos>
-<termo> ::= <LITERAL> | <nome-da-regra>
+<termo> ::= <LITERAL> | <nome-da-regra> |
 <nome-da-regra> ::= "<" <LITERAL> ">"
 <LITERAL> ::= "\".*\""
     """

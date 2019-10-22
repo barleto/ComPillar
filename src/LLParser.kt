@@ -1,5 +1,3 @@
-
-
 class LLParser(val lexer: Lexer, var debug : Boolean = false) {
     private var head: Token = lexer.getToken()
     private var lookAhead: Token = lexer.getToken()
@@ -58,44 +56,50 @@ class LLParser(val lexer: Lexer, var debug : Boolean = false) {
 
     private fun ruleBody(ruleBody: BNFSyntaxNodes.RuleBody) {
         pLog()
-        while(true){
+        ruleBody.add(BNFSyntaxNodes.RuleDescription())
+        ruleDescription(ruleBody.last() as BNFSyntaxNodes.RuleDescription)
+
+        while(head.type == TokenType.OR){
+            consumeToken(TokenType.OR)
             ruleBody.add(BNFSyntaxNodes.RuleDescription())
             ruleDescription(ruleBody.last() as BNFSyntaxNodes.RuleDescription)
-            if(head.type != TokenType.OR){
-                break
-            }else{
-                consumeToken(TokenType.OR)
-            }
         }
     }
 
     private fun ruleDescription(ruleDescription: BNFSyntaxNodes.RuleDescription) {
         pLog()
-        while(head.type == TokenType.LITERAL || head.type == TokenType.RULE){
-            getTerms(ruleDescription)
-            if(head.type == TokenType.RULE && lookAhead.type == TokenType.ARROW){
+        while ((head.type == TokenType.LITERAL || head.type == TokenType.RULE)) {
+            getTerm(ruleDescription)
+            if (isRuleDescriptionFinalized()) {
                 break
             }
         }
-
+        if (ruleDescription.children.size == 0) {
+            EmptyLiteralAdded(ruleDescription)
+        }
     }
 
-    private fun getTerms(ruleDescription: BNFSyntaxNodes.RuleDescription) {
+    private fun EmptyLiteralAdded(ruleDescription: BNFSyntaxNodes.RuleDescription) {
+        pLog()
+        ruleDescription.add(BNFSyntaxNodes.EmptyLiteralNode())
+    }
+
+    private fun getTerm(ruleDescription: BNFSyntaxNodes.RuleDescription) {
         pLog()
         var resultingNode : BNFSyntaxNodes.AstNode? = null
-        if (head.type == TokenType.RULE) {
+        if(isRuleDescriptionFinalized()){
+            resultingNode = BNFSyntaxNodes.EmptyLiteralNode()
+        }else if (head.type == TokenType.RULE) {
             resultingNode = BNFSyntaxNodes.RuleReferenceNode(head.value)
             consumeToken(TokenType.RULE)
         } else if (head.type == TokenType.LITERAL) {
             resultingNode = BNFSyntaxNodes.LiteralNode(head.value)
             consumeToken(TokenType.LITERAL)
         }
-        if(head.type == TokenType.OPTIONAL_OP){
-            resultingNode = BNFSyntaxNodes.OptionalOpNode(resultingNode!!)
-            consumeToken(TokenType.OPTIONAL_OP)
-        }
         ruleDescription.add(resultingNode!!)
     }
+
+    private fun isRuleDescriptionFinalized() = (head.type == TokenType.RULE && lookAhead.type == TokenType.ARROW) || head.type == TokenType.EOF
 
     private fun pLog(){
         if (!debug) return
@@ -130,10 +134,5 @@ class BNFSyntaxNodes {
     class RuleDescription : AstNode()
     class RuleReferenceNode(val value : String) : AstNode()
     class LiteralNode(val value : String) : AstNode()
-    class OptionalOpNode(n : AstNode) : AstNode(){
-        init {
-            children.add(n)
-        }
-    }
-
+    class EmptyLiteralNode : AstNode()
 }

@@ -11,7 +11,7 @@ class Grammar{
     val table: HashMap<String,MutableList<MutableList<Term>>> = hashMapOf()
 
     fun createRule(name : BNFSyntaxNodes.RuleNameDeclarationNode, ruleBody: BNFSyntaxNodes.RuleBody){
-        if(!table.containsKey(name.ruleName)){
+        /*if(!table.containsKey(name.ruleName)){
             table[name.ruleName] = mutableListOf()
         }
         val entry = table[name.ruleName]
@@ -38,7 +38,7 @@ class Grammar{
                 }
                 description.add(grammarTerm!!)
             }
-        }
+        }*/
     }
 
     fun addToken(regexp : String){
