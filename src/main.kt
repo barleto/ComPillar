@@ -19,6 +19,9 @@ fun main(args: Array<String>) {
     }
     lex = Lexer(input)
     val bnfAstTree = LLParser(lex, true).parse()
-    var grammar = BNFASTTreeVisitor().visit(bnfAstTree)
+    println()
+    println()
+    println()
+    var grammar = BNFASTTreeVisitor(true).start(bnfAstTree)
 }
 

@@ -1,4 +1,4 @@
-class LLParser(val lexer: Lexer, var debug : Boolean = false) {
+class LLParser(val lexer: Lexer, val debug : Boolean = false) {
     private var head: Token = lexer.getToken()
     private var lookAhead: Token = lexer.getToken()
     private var astRoot : BNFSyntaxNodes.SyntaxNode = BNFSyntaxNodes.SyntaxNode()
@@ -47,11 +47,11 @@ class LLParser(val lexer: Lexer, var debug : Boolean = false) {
 
     private fun ruleDefinition(ruleExpressionNode: BNFSyntaxNodes.RuleExpressionNode) {
         pLog()
-        ruleExpressionNode[0] = BNFSyntaxNodes.RuleNameDeclarationNode(head.value)
+        ruleExpressionNode.ruleName = head.value
         consumeToken(TokenType.RULE)
         consumeToken(TokenType.ARROW)
-        ruleExpressionNode[1] = BNFSyntaxNodes.RuleBody()
-        ruleBody(ruleExpressionNode[1] as BNFSyntaxNodes.RuleBody)
+        ruleExpressionNode.body = BNFSyntaxNodes.RuleBody()
+        ruleBody(ruleExpressionNode.body)
     }
 
     private fun ruleBody(ruleBody: BNFSyntaxNodes.RuleBody) {
@@ -109,7 +109,8 @@ class LLParser(val lexer: Lexer, var debug : Boolean = false) {
 }
 
 class BNFSyntaxNodes {
-    abstract class AstNode {
+    abstract class AstNode
+    abstract class AstNodeWithChildren : AstNode(){
         val children : MutableList<AstNode> = mutableListOf()
         operator fun get(i : Int) : AstNode?{
             return children[i]
@@ -126,12 +127,18 @@ class BNFSyntaxNodes {
         fun first() : AstNode{
             return  children.first()
         }
+        fun <T> castChildren() : MutableList<T>{
+            return children as MutableList<T>
+        }
     }
-    class SyntaxNode : AstNode()
-    class RuleExpressionNode : AstNode()
+    class SyntaxNode : AstNodeWithChildren()
+    class RuleExpressionNode : AstNode(){
+        lateinit var body: RuleBody
+        lateinit var ruleName: String
+    }
     class RuleNameDeclarationNode(val ruleName : String) : AstNode()
-    class RuleBody : AstNode()
-    class RuleDescription : AstNode()
+    class RuleBody : AstNodeWithChildren()
+    class RuleDescription : AstNodeWithChildren()
     class RuleReferenceNode(val value : String) : AstNode()
     class LiteralNode(val value : String) : AstNode()
     class EmptyLiteralNode : AstNode()

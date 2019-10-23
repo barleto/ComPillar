@@ -3,13 +3,21 @@ import java.lang.reflect.InvocationTargetException
 import kotlin.concurrent.thread
 import kotlin.reflect.jvm.kotlinFunction
 
-class BNFASTTreeVisitor{
+class BNFASTTreeVisitor(var debug : Boolean = false){
+    private var stackCount : Int = -1
 
     val grammar : Grammar = Grammar()
+    val table: HashMap<String,MutableList<MutableList<String>>> = hashMapOf()
 
-    fun visit(node : BNFSyntaxNodes.AstNode){
+    fun start(node : BNFSyntaxNodes.AstNode){
+        visit(node)
+    }
+
+    private fun visit(node : BNFSyntaxNodes.AstNode){
         var visitmethod = getMethodFromClassName(node)
+        stackCount ++
         visitmethod(node)
+        stackCount --
     }
 
     private fun getMethodFromClassName(node: BNFSyntaxNodes.AstNode): (BNFSyntaxNodes.AstNode)->Unit {
@@ -34,36 +42,47 @@ class BNFASTTreeVisitor{
     }
 
     private fun p_default(node : BNFSyntaxNodes.AstNode){
-        for (n in node.children){
-            visit(n)
+        pLog()
+        if(node is BNFSyntaxNodes.AstNodeWithChildren) {
+            for (n in node.children) {
+                visit(n)
+            }
         }
     }
 
-    private fun p_RuleNameDeclarationNode(n : BNFSyntaxNodes.RuleNameDeclarationNode){
-
+    private fun p_RuleExpressionNode(n : BNFSyntaxNodes.RuleExpressionNode){
+        pLog()
+        table[n.ruleName] = mutableListOf(mutableListOf())
+        for(rd in n.body.castChildren<BNFSyntaxNodes.RuleDescription>()){
+            for(t in rd.children){
+                //TODO
+            }
+        }
     }
 
-    private fun p_RuleBody(n : BNFSyntaxNodes.AstNode){
-
+    private fun p_RuleBody(n : BNFSyntaxNodes.RuleBody){
+        pLog()
     }
 
-    private fun p_RuleDescription(n : BNFSyntaxNodes.AstNode){
-
+    private fun p_RuleDescription(n : BNFSyntaxNodes.RuleDescription){
+        pLog()
     }
 
-    private fun p_RuleReferenceNode(n : BNFSyntaxNodes.AstNode){
-
+    private fun p_RuleReferenceNode(n : BNFSyntaxNodes.RuleReferenceNode){
+        pLog()
     }
 
-    private fun p_LiteralNode(n : BNFSyntaxNodes.AstNode){
-
+    private fun p_LiteralNode(n : BNFSyntaxNodes.LiteralNode){
+        pLog()
     }
 
-    private fun p_OptionalOpNode(n : BNFSyntaxNodes.AstNode){
-
+    private fun p_EmptyLiteralNode(n : BNFSyntaxNodes.EmptyLiteralNode){
+        pLog()
     }
 
-    private fun p_EmptyLiteralNode(n : BNFSyntaxNodes.AstNode){
-
+    private fun pLog(){
+        if (!debug) return
+        val i = stackCount
+        println("${"| ".repeat(i)}${Thread.currentThread().stackTrace[2].methodName}")
     }
 }
