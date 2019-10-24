@@ -5,8 +5,9 @@ class GrammarTableGenerator(var debug : Boolean = false){
 
     val table: HashMap<String,MutableList<MutableList<String>>> = hashMapOf()
 
-    fun start(node : BNFSyntaxNodes.AstNode){
+    fun start(node : BNFSyntaxNodes.AstNode) : Grammar {
         visit(node)
+        return Grammar(table)
     }
 
     private fun visit(node : BNFSyntaxNodes.AstNode){

@@ -136,7 +136,6 @@ class BNFSyntaxNodes {
         lateinit var body: RuleBody
         lateinit var ruleName: String
     }
-    class RuleNameDeclarationNode(val ruleName : String) : AstNode()
     class RuleBody : AstNodeWithChildren()
     class RuleDescription : AstNodeWithChildren()
     class RuleReferenceNode(val value : String) : AstNode()

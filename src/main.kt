@@ -19,9 +19,6 @@ fun main(args: Array<String>) {
     }
     lex = Lexer(input)
     val bnfAstTree = LLParser(lex, true).parse()
-    println()
-    println()
-    println()
     var grammar = GrammarTableGenerator(true).start(bnfAstTree)
 }
 
