@@ -52,37 +52,32 @@ class BNFASTTreeVisitor(var debug : Boolean = false){
 
     private fun p_RuleExpressionNode(n : BNFSyntaxNodes.RuleExpressionNode){
         pLog()
-        table[n.ruleName] = mutableListOf(mutableListOf())
+        table[n.ruleName] = mutableListOf()
         for(rd in n.body.castChildren<BNFSyntaxNodes.RuleDescription>()){
+            var description : MutableList<String> = mutableListOf()
+            dLog(n.ruleName)
+            dLog(" -> ")
             for(t in rd.children){
-                //TODO
+                when(t){
+                    is BNFSyntaxNodes.LiteralNode -> description.add(t.value)
+                    is BNFSyntaxNodes.RuleReferenceNode -> description.add(t.value)
+                    is BNFSyntaxNodes.EmptyLiteralNode -> description.add("")
+                }
+                dLog(description.last()+ " ")
             }
+            table[n.ruleName]!!.add(description)
+            println()
         }
-    }
-
-    private fun p_RuleBody(n : BNFSyntaxNodes.RuleBody){
-        pLog()
-    }
-
-    private fun p_RuleDescription(n : BNFSyntaxNodes.RuleDescription){
-        pLog()
-    }
-
-    private fun p_RuleReferenceNode(n : BNFSyntaxNodes.RuleReferenceNode){
-        pLog()
-    }
-
-    private fun p_LiteralNode(n : BNFSyntaxNodes.LiteralNode){
-        pLog()
-    }
-
-    private fun p_EmptyLiteralNode(n : BNFSyntaxNodes.EmptyLiteralNode){
-        pLog()
     }
 
     private fun pLog(){
         if (!debug) return
         val i = stackCount
         println("${"| ".repeat(i)}${Thread.currentThread().stackTrace[2].methodName}")
+    }
+
+    private fun dLog( s : Any){
+        if (!debug) return
+        print(s)
     }
 }
