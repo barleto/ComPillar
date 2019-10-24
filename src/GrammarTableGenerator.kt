@@ -1,12 +1,8 @@
 import java.lang.Exception
 import java.lang.reflect.InvocationTargetException
-import kotlin.concurrent.thread
-import kotlin.reflect.jvm.kotlinFunction
 
-class BNFASTTreeVisitor(var debug : Boolean = false){
-    private var stackCount : Int = -1
+class GrammarTableGenerator(var debug : Boolean = false){
 
-    val grammar : Grammar = Grammar()
     val table: HashMap<String,MutableList<MutableList<String>>> = hashMapOf()
 
     fun start(node : BNFSyntaxNodes.AstNode){
@@ -15,9 +11,7 @@ class BNFASTTreeVisitor(var debug : Boolean = false){
 
     private fun visit(node : BNFSyntaxNodes.AstNode){
         var visitmethod = getMethodFromClassName(node)
-        stackCount ++
         visitmethod(node)
-        stackCount --
     }
 
     private fun getMethodFromClassName(node: BNFSyntaxNodes.AstNode): (BNFSyntaxNodes.AstNode)->Unit {
@@ -42,7 +36,6 @@ class BNFASTTreeVisitor(var debug : Boolean = false){
     }
 
     private fun p_default(node : BNFSyntaxNodes.AstNode){
-        pLog()
         if(node is BNFSyntaxNodes.AstNodeWithChildren) {
             for (n in node.children) {
                 visit(n)
@@ -51,7 +44,6 @@ class BNFASTTreeVisitor(var debug : Boolean = false){
     }
 
     private fun p_RuleExpressionNode(n : BNFSyntaxNodes.RuleExpressionNode){
-        pLog()
         table[n.ruleName] = mutableListOf()
         for(rd in n.body.castChildren<BNFSyntaxNodes.RuleDescription>()){
             var description : MutableList<String> = mutableListOf()
@@ -68,12 +60,6 @@ class BNFASTTreeVisitor(var debug : Boolean = false){
             table[n.ruleName]!!.add(description)
             println()
         }
-    }
-
-    private fun pLog(){
-        if (!debug) return
-        val i = stackCount
-        println("${"| ".repeat(i)}${Thread.currentThread().stackTrace[2].methodName}")
     }
 
     private fun dLog( s : Any){

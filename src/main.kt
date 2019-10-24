@@ -7,7 +7,7 @@ fun main(args: Array<String>) {
 <termo> ::= <LITERAL> | <nome-da-regra> |
 <nome-da-regra> ::= "<" <LITERAL> ">"
 <LITERAL> ::= "\".*\""
-    """
+"""
 
     var lex = Lexer(input)
     while (true) {
@@ -22,6 +22,6 @@ fun main(args: Array<String>) {
     println()
     println()
     println()
-    var grammar = BNFASTTreeVisitor(true).start(bnfAstTree)
+    var grammar = GrammarTableGenerator(true).start(bnfAstTree)
 }
 
