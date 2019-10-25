@@ -12,18 +12,18 @@ class Grammar(val grammarEntryTable: HashMap<String, MutableList<MutableList<Ter
     }
 
     init {
-        FindTokens()
+        FindAnonymousTokens()
     }
 
-    private fun FindTokens() {
+    private fun FindAnonymousTokens() {
         for (rule in grammarEntryTable) {
             for (desc in rule.value) {
                 for(term in desc){
                     if(term is TerminalTerm){
-                        if(!tokens.contains(term.value)){
-                            val unescapedValue : String = unescapeString(term.value)
-                            tokens.add(unescapedValue)
-                            dLog("Token found: $unescapedValue")
+                        val tokenName : String = unescapeString(term.value)
+                        if(!tokens.contains(tokenName)){
+                            tokens.add(tokenName)
+                            dLog("Token found: $tokenName")
                         }
                     }
                 }
