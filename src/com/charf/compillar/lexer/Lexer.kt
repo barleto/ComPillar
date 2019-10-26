@@ -1,3 +1,5 @@
+package com.charf.compillar.lexer
+
 import java.util.regex.Pattern
 
 class Lexer(var input: String) {
@@ -10,8 +12,6 @@ class Lexer(var input: String) {
         //https://stackoverflow.com/questions/2498635/java-regex-for-matching-quoted-string-with-escaped-quotes
         // '([^\\']+|\\([btnfr"'\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|"([^\\"]+|\\([btnfr"'\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*"
         definitions.add(TokenDefinition("'([^\\\\']+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|\"([^\\\\\"]+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*\"", TokenType.LITERAL))
-        println(definitions.last().pattern)
-
         definitions.add(TokenDefinition("<[_a-zA-z][-_a-zA-z0-9]*>", TokenType.RULE))
         definitions.add(TokenDefinition("(:)\\1=", TokenType.ARROW))
         definitions.add(TokenDefinition("[|]", TokenType.OR))
@@ -28,7 +28,6 @@ class Lexer(var input: String) {
     }
 
     fun getToken(): Token {
-        val token: Token
         while (inputPointer < input.length) {
             val match = scan()
             if (match.isMatch && match.start == inputPointer) {
@@ -41,7 +40,7 @@ class Lexer(var input: String) {
                 inputPointer += 1
             }
         }
-        return Token(TokenType.EOF, "", 0,0)
+        return Token(TokenType.EOF, "", 0, 0)
     }
 }
 

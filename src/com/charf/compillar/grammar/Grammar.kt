@@ -1,22 +1,16 @@
-import org.apache.commons.text.StringEscapeUtils
-import java.math.BigInteger
-import java.security.MessageDigest
+package com.charf.compillar.grammar
 
 class Grammar(val grammarEntryTable: HashMap<String, MutableList<MutableList<Term>>>, val debug: Boolean = false){
 
     var tokens : MutableSet<String> = mutableSetOf()
-
-    fun String.md5(): String {
-        val md = MessageDigest.getInstance("MD5")
-        return BigInteger(1, md.digest(toByteArray())).toString(16).padStart(32, '0')
-    }
+    private var firstTable: FirstTable
+    private var followTable: FollowTable
 
     init {
         FindAnonymousTokens()
-        var firstAndFollowTableGenerators = FirstAndFollowTableGenerators(grammarEntryTable, tokens)
-        for(entry in firstAndFollowTableGenerators.first){
-            println("ENTRY: ${entry}")
-        }
+        firstTable = FirstTable(grammarEntryTable, tokens, debug)
+        //TODO CHARF get first symbol automatically
+        followTable = FollowTable(firstTable, grammarEntryTable, "<sintaxe>", debug)
     }
 
     private fun FindAnonymousTokens() {
@@ -24,19 +18,15 @@ class Grammar(val grammarEntryTable: HashMap<String, MutableList<MutableList<Ter
             for (desc in rule.value) {
                 for(term in desc){
                     if(term is TerminalTerm){
-                        val tokenName : String = unescapeString(term.value)
+                        val tokenName : String = term.value
                         if(!tokens.contains(tokenName)){
                             tokens.add(tokenName)
-                            dLog("Token found: $tokenName")
+                            dLog("com.charf.Token found: $tokenName")
                         }
                     }
                 }
             }
         }
-    }
-
-    private fun unescapeString(value: String): String {
-        return StringEscapeUtils.unescapeJava(value.substring(1, value.length - 1))
     }
 
     fun dLog(s : Any){

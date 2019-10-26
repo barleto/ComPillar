@@ -1,3 +1,6 @@
+package com.charf.compillar.grammar
+
+import com.charf.compillar.parser.BNFSyntaxNodes
 import java.lang.Exception
 import java.lang.reflect.InvocationTargetException
 

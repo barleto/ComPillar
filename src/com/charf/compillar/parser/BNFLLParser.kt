@@ -1,3 +1,9 @@
+package com.charf.compillar.parser
+
+import com.charf.compillar.lexer.Lexer
+import com.charf.compillar.lexer.Token
+import com.charf.compillar.lexer.TokenType
+
 class LLParser(val lexer: Lexer, val debug : Boolean = false) {
     private var head: Token = lexer.getToken()
     private var lookAhead: Token = lexer.getToken()
@@ -121,10 +127,10 @@ class BNFSyntaxNodes {
         fun add(v : AstNode){
             children.add(v)
         }
-        fun last() : AstNode{
+        fun last() : AstNode {
             return children.last()
         }
-        fun first() : AstNode{
+        fun first() : AstNode {
             return  children.first()
         }
         fun <T> castChildren() : MutableList<T>{

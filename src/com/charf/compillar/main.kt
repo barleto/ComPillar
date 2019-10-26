@@ -1,3 +1,10 @@
+package com.charf.compillar
+
+import com.charf.compillar.grammar.GrammarGenerator
+import com.charf.compillar.lexer.Lexer
+import com.charf.compillar.lexer.TokenType
+import com.charf.compillar.parser.LLParser
+
 fun main(args: Array<String>) {
     val input = """<sintaxe> ::= <lista-de-regras>
 <lista-de-regras> ::= <regra> | <regra> <lista-de-regras>
@@ -14,7 +21,6 @@ fun main(args: Array<String>) {
         val tok = lex.getToken()
         println("<${tok.type}, ${tok.value}> ")
         if (tok.type == TokenType.EOF) {
-            var a = ""
             break
         }
     }

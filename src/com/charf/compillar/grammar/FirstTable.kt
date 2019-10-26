@@ -1,9 +1,10 @@
+package com.charf.compillar.grammar
+
 import java.lang.Exception
 
-class FirstAndFollowTableGenerators(val grammarEntryTable: HashMap<String, MutableList<MutableList<Grammar.Term>>>, val tokens : MutableSet<String>){
+class FirstTable(val grammarEntryTable: HashMap<String, MutableList<MutableList<Grammar.Term>>>, val tokens : MutableSet<String>, val debug : Boolean = false){
 
     var first : HashMap<String,MutableSet<String>> = hashMapOf()
-    var follow : HashMap<String,MutableSet<String>> = hashMapOf()
 
     init{
         for (rule in grammarEntryTable) {
@@ -11,6 +12,19 @@ class FirstAndFollowTableGenerators(val grammarEntryTable: HashMap<String, Mutab
                 createFirstSetForRule(Pair(rule.key, rule.value))
             }
         }
+        //add tokens
+        //add tokens
+        for(token in tokens){
+            first[token] = mutableSetOf()
+            first[token]!!.add(token)
+        }
+
+        if(debug) {
+            for (f in first) {
+                println("FIRST: $f")
+            }
+        }
+
     }
 
     private fun createFirstSetForRule(rule: Pair<String, MutableList<MutableList<Grammar.Term>>>) {
@@ -22,7 +36,7 @@ class FirstAndFollowTableGenerators(val grammarEntryTable: HashMap<String, Mutab
             val term = description[0]
             when(term){
                 is Grammar.TerminalTerm -> {termIsTerminal(rule,term)}
-                is Grammar.EmptyTerm -> {termIsEmpty(rule, term)}
+                is Grammar.EmptyTerm -> {termIsEmpty(rule)}
                 is Grammar.NonTerminalTerm -> {termIsNonTerminal(rule, description)}
             }
         }
@@ -48,11 +62,33 @@ class FirstAndFollowTableGenerators(val grammarEntryTable: HashMap<String, Mutab
         first[rule.first]!!.add("")
     }
 
-    private fun termIsEmpty(rule: Pair<String, MutableList<MutableList<Grammar.Term>>>, term: Grammar.EmptyTerm) {
+    private fun termIsEmpty(rule: Pair<String, MutableList<MutableList<Grammar.Term>>>) {
         first[rule.first]!!.add("")
     }
 
     private fun termIsTerminal(rule: Pair<String, MutableList<MutableList<Grammar.Term>>>, term: Grammar.TerminalTerm) {
         first[rule.first]!!.add(term.value)
+    }
+
+    operator fun get(vararg termsList : String) : MutableSet<String>? {
+        return get(termsList.asList())
+    }
+
+    operator fun get(termsList : List<String>) : MutableSet<String>?{
+        if(termsList.isEmpty()){
+            return null
+        }else if(termsList.size == 1){
+            return first[termsList[0]]
+        }else{
+            val resultingSet = mutableSetOf<String>()
+            for(term in termsList){
+                val firstOfTerm = first[term] ?: throw Exception("Term $term was not found at the First table.")
+                resultingSet.addAll(firstOfTerm)
+                if(!firstOfTerm.contains("")){
+                    break
+                }
+            }
+            return resultingSet
+        }
     }
 }
