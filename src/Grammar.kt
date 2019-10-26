@@ -13,6 +13,10 @@ class Grammar(val grammarEntryTable: HashMap<String, MutableList<MutableList<Ter
 
     init {
         FindAnonymousTokens()
+        var firstAndFollowTableGenerators = FirstAndFollowTableGenerators(grammarEntryTable, tokens)
+        for(entry in firstAndFollowTableGenerators.first){
+            println("ENTRY: ${entry}")
+        }
     }
 
     private fun FindAnonymousTokens() {
@@ -46,3 +50,4 @@ class Grammar(val grammarEntryTable: HashMap<String, MutableList<MutableList<Ter
     class TerminalTerm(value : String) : Term(value)
     class EmptyTerm : Term("")
 }
+

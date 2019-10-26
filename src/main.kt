@@ -6,7 +6,7 @@ fun main(args: Array<String>) {
 <lista-de-termos>  ::= <termo> | <termo>  <lista-de-termos>
 <termo> ::= <LITERAL> | <nome-da-regra> |
 <nome-da-regra> ::= "<" <LITERAL> ">"
-<LITERAL> ::= "'([^\\\\']+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|\"([^\\\\\"]+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*\""
+<LITERAL> ::= "\".*\""
 """
 
     var lex = Lexer(input)
