@@ -5,6 +5,7 @@ import java.util.regex.Pattern
 class Lexer(var input: String) {
 
     var lineno: Int = 1
+    var lineCharCount: Int = 0
     var inputPointer = 0
     val definitions: MutableList<TokenDefinition> = mutableListOf()
 
@@ -13,8 +14,12 @@ class Lexer(var input: String) {
         // '([^\\']+|\\([btnfr"'\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|"([^\\"]+|\\([btnfr"'\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*"
         definitions.add(TokenDefinition("'([^\\\\']+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|\"([^\\\\\"]+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*\"", TokenType.LITERAL))
         definitions.add(TokenDefinition("<[_a-zA-z][-_a-zA-z0-9]*>", TokenType.RULE))
-        definitions.add(TokenDefinition("(:)\\1=", TokenType.ARROW))
+        definitions.add(TokenDefinition("::=", TokenType.ARROW))
         definitions.add(TokenDefinition("[|]", TokenType.OR))
+        definitions.add(TokenDefinition("[(]", TokenType.LEFT_PAREN))
+        definitions.add(TokenDefinition("[)]", TokenType.RIGHT_PAREN))
+        definitions.add(TokenDefinition("[+]", TokenType.PLUS))
+        definitions.add(TokenDefinition("[*]", TokenType.STAR))
     }
 
     fun scan(): TokenDefinition.MatchResult {
@@ -32,19 +37,33 @@ class Lexer(var input: String) {
             val match = scan()
             if (match.isMatch && match.start == inputPointer) {
                 inputPointer = match.end
-                return Token(match.type, match.value, lineno, inputPointer)
+                var start = lineCharCount;
+                lineCharCount += match.value.length;
+                lineno += match.value.count{it == '\n'};
+                return Token(match.type, match.value, lineno, start)
             } else {
                 if (input[inputPointer] == '\n') {
                     lineno += 1
+                    lineCharCount = 0;
+                    inputPointer += 1
+                    continue
+                } else if(input[inputPointer].toString().isBlank()) {
+                    inputPointer += 1;
+                    lineCharCount += 1;
+                    continue;
                 }
-                inputPointer += 1
+                throw Exception("Unidentified character '${input[inputPointer]}' at [${lineno},${inputPointer}]");
             }
         }
-        return Token(TokenType.EOF, "", 0, 0)
+        return Token(TokenType.EOF, "", lineno + 1, 0)
     }
 }
 
-class Token(val type: TokenType, val value: String, val lineno: Int, val startPos: Int)
+class Token(val type: TokenType, val value: String, val lineno: Int, val startPos: Int){
+    override fun toString(): String {
+        return "${this.type.toString()}[${this.lineno},${this.startPos},${this.value.length}] = ${this.value}";
+    }
+}
 
 class TokenDefinition(patternString: String, val type: TokenType) {
     val pattern: Pattern
@@ -71,9 +90,13 @@ class TokenDefinition(patternString: String, val type: TokenType) {
 }
 
 enum class TokenType {
+    EOF,
     LITERAL,
     OR,
     ARROW,
     RULE,
-    EOF
+    LEFT_PAREN,
+    RIGHT_PAREN,
+    PLUS,
+    STAR,
 }
