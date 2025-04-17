@@ -58,7 +58,16 @@ class Lexer(var input: String) {
                 throw Exception("Unidentified character '${input[inputPointer]}' at [${lineno},${inputPointer}]");
             }
         }
-        return Token(TokenType.EOF, "", lineno + 1, 0)
+        return Token(TokenType.EOF, "", lineno, lineCharCount)
+    }
+    
+    fun getTokens() : List<Token> {
+        val result = mutableListOf<Token>();
+        do{
+            val token = getToken();
+            result.add(token);
+        } while(token.type != TokenType.EOF);
+        return result;
     }
 }
 
@@ -78,7 +87,6 @@ class TokenDefinition(patternString: String, val type: TokenType) {
     fun isMatch(input: String, startIndex: Int): MatchResult {
         val matcher = pattern.matcher(input)
         return if (matcher.find(startIndex)) {
-            //println("${matcher.group()}, ${matcher.start()}, ${matcher.end()}")
             MatchResult(true, matcher.group(), type, matcher.start(), matcher.end())
         } else {
             MatchResult(false, "")
