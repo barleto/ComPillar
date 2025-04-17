@@ -11,7 +11,8 @@ class Lexer(var input: String) {
 
     init {
         //https://stackoverflow.com/questions/2498635/java-regex-for-matching-quoted-string-with-escaped-quotes
-        // '([^\\']+|\\([btnfr"'\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|"([^\\"]+|\\([btnfr"'\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*"
+        // "'([^\\']+|\\([btnfr"'\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|"([^\\"]+|\\([btnfr"'\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*"
+        //Regex pattern alternative for string literals: "\"(?:[\\\\]\"|[^\"])*\""
         definitions.add(TokenDefinition("'([^\\\\']+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|\"([^\\\\\"]+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*\"", TokenType.LITERAL))
         definitions.add(TokenDefinition("<[_a-zA-z][-_a-zA-z0-9]*>", TokenType.RULE))
         definitions.add(TokenDefinition("::=", TokenType.ARROW))
