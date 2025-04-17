@@ -112,7 +112,7 @@ enum class TokenType {
     RIGHT_PAREN,
     PLUS,
     STAR,
-	SEMI_COL,
-	ONE_LINE_COMM,
-	MULTI_LINE_COMM,
+    SEMI_COL,
+    ONE_LINE_COMM,
+    MULTI_LINE_COMM,
 }
