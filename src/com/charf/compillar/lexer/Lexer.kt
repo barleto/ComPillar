@@ -11,9 +11,7 @@ class Lexer(var input: String) {
 
     init {
         //https://stackoverflow.com/questions/2498635/java-regex-for-matching-quoted-string-with-escaped-quotes
-        // "'([^\\']+|\\([btnfr"'\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|"([^\\"]+|\\([btnfr"'\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*"
-        //Regex pattern alternative for string literals: "\"(?:[\\\\]\"|[^\"])*\""
-        definitions.add(TokenDefinition("'([^\\\\']+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*'|\"([^\\\\\"]+|\\\\([btnfr\"'\\\\]|[0-3]?[0-7]{1,2}|u[0-9a-fA-F]{4}))*\"", TokenType.LITERAL))
+        definitions.add(TokenDefinition("\"(?:[\\\\]\"|[^\"])*\"", TokenType.LITERAL))
         definitions.add(TokenDefinition("<[_a-zA-z][-_a-zA-z0-9]*>", TokenType.RULE))
         definitions.add(TokenDefinition("::=", TokenType.ARROW))
         definitions.add(TokenDefinition("[|]", TokenType.OR))
@@ -21,6 +19,10 @@ class Lexer(var input: String) {
         definitions.add(TokenDefinition("[)]", TokenType.RIGHT_PAREN))
         definitions.add(TokenDefinition("[+]", TokenType.PLUS))
         definitions.add(TokenDefinition("[*]", TokenType.STAR))
+        definitions.add(TokenDefinition("IGNORE", TokenType.IGNORE_RULE))
+        definitions.add(TokenDefinition(";", TokenType.SEMI_COL))
+        definitions.add(TokenDefinition("//.*(?=\n)", TokenType.ONE_LINE_COMM))
+        definitions.add(TokenDefinition("\\/\\*[\\s\\S]*?\\*\\/", TokenType.MULTI_LINE_COMM))
     }
 
     fun scan(): TokenDefinition.MatchResult {
@@ -76,6 +78,7 @@ class TokenDefinition(patternString: String, val type: TokenType) {
     fun isMatch(input: String, startIndex: Int): MatchResult {
         val matcher = pattern.matcher(input)
         return if (matcher.find(startIndex)) {
+            //println("${matcher.group()}, ${matcher.start()}, ${matcher.end()}")
             MatchResult(true, matcher.group(), type, matcher.start(), matcher.end())
         } else {
             MatchResult(false, "")
@@ -93,6 +96,7 @@ class TokenDefinition(patternString: String, val type: TokenType) {
 enum class TokenType {
     EOF,
     LITERAL,
+    IGNORE_RULE,
     OR,
     ARROW,
     RULE,
@@ -100,4 +104,7 @@ enum class TokenType {
     RIGHT_PAREN,
     PLUS,
     STAR,
+	SEMI_COL,
+	ONE_LINE_COMM,
+	MULTI_LINE_COMM,
 }
