@@ -8,8 +8,8 @@ BNF in BNF:
 <language> ::= <rule>*;
 <rule> ::= <non-term> "::=" <prod-list> ";";
 <prod-list> ::= <prod> | <prod> ("[|]" <prod>)+;
-<prod> ::= <seg> | <seg><seg>+;
-<seg> ::= <elem-group> | <elem-group>"+" | <elem-group>"*";
+<prod> ::= <expr>+;
+<expr> ::= <elem-group> | <elem-group>"+" | <elem-group>"*";
 <elem-group> :: <elem> | "[(]"<elem>"[)]";
 <elem> ::= <non-term> | <term> | <prod>;
 
